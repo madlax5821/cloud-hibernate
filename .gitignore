@@ -1,0 +1,5 @@
+# the files below are ignored by git management
+
+.iml
+target
+.idea
