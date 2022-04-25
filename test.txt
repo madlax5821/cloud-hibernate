@@ -1,3 +1,2 @@
 for pulling test
-add a line 
-add secong line
+delete two lines and add this line
