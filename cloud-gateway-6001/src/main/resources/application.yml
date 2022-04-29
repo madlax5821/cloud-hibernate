@@ -13,7 +13,7 @@ spring:
     gateway:
       routes:
         - id: userModule
-          servceId: user-provider
+          servceId: user-service
           uri: http://localhost:8001/
           predicates:
             - Path=/users/**
