@@ -17,3 +17,8 @@ spring:
           uri: http://localhost:8001/
           predicates:
             - Path=/users/**
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
