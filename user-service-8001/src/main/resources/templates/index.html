@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+    <script src="/js/jquery.js"></script>
+</head>
+<body>
+    <h2>
+        Welcome to Spring Security+Hibernate+Microservices Application <br>
+        <label id="token"/>
+    </h2>
+</body>
+
+<script>
+    window.onload = function () {
+        let token = localStorage.getItem("token");
+        //DOM code
+        document.getElementById("token").innerHTML = token;
+        //jquery patter
+        //$("#token").html(token);
+    }
+</script>
+</html>

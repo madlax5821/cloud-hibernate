@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/js/jquery.js"></script>
+</head>
+
+
+<body>
+    <h2>USER LOGIN SYSTEM</h2>
+    <form>
+        <input type="text" name="username" id="username"> <br>
+        <input type="password" name="password" id="password"> <br>
+        <input type="button" onclick="login()" value="login!">
+    </form>
+</body>
+
+<script>
+    function login() {
+        let username = $("#username").val();
+        let password = $("#password").val();
+
+        if (username==null||username==""){
+            alert("username cannot be empty");
+            return;
+        }
+        if (password==null||password==""){
+            alert("password cannot be empty");
+            return;
+        }
+        $.post("login",{
+            "username":username,
+            "password":password
+        },function (result) {
+            console.log(result);
+            let token = result.result; //token
+            console.log("token: "+token);
+
+            //store token -> session storage/local storage
+            localStorage.setItem("token",token);
+            window.location.href = "index";
+        })
+    }
+</script>
+</html>

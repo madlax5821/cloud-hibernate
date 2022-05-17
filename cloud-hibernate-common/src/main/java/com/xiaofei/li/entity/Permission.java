@@ -19,8 +19,10 @@ public class Permission implements Serializable {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column
     private Integer id;
-    @Column (name = "permission_name")
-    private String permissionName;
+    @Column (name = "permission_url")
+    private String permissionUrl;
+    @Column (name = "permission_desc")
+    private String permissionDesc;
     @ManyToMany (mappedBy = "permissions")
     @JsonIgnore
     private Set<Role> roles;
@@ -28,9 +30,26 @@ public class Permission implements Serializable {
     public Permission() {
     }
 
-    public Permission(Integer id, String permissionName) {
+    public Permission(Integer id, String permissionUrl, String permissionDesc) {
         this.id = id;
-        this.permissionName = permissionName;
+        this.permissionUrl = permissionUrl;
+        this.permissionDesc = permissionDesc;
+    }
+
+    public String getPermissionUrl() {
+        return permissionUrl;
+    }
+
+    public void setPermissionUrl(String permissionUrl) {
+        this.permissionUrl = permissionUrl;
+    }
+
+    public String getPermissionDesc() {
+        return permissionDesc;
+    }
+
+    public void setPermissionDesc(String permissionDesc) {
+        this.permissionDesc = permissionDesc;
     }
 
     public Integer getId() {
@@ -41,13 +60,7 @@ public class Permission implements Serializable {
         this.id = id;
     }
 
-    public String getPermissionName() {
-        return permissionName;
-    }
 
-    public void setPermissionName(String permissionName) {
-        this.permissionName = permissionName;
-    }
 
     public Set<Role> getRoles() {
         if (roles==null){
@@ -64,7 +77,8 @@ public class Permission implements Serializable {
     public String toString() {
         return "Permission{" +
                 "id=" + id +
-                ", permissionName='" + permissionName + '\'' +
+                ", permissionUrl='" + permissionUrl + '\'' +
+                ", permissionDesc='" + permissionDesc + '\'' +
                 '}';
     }
 }

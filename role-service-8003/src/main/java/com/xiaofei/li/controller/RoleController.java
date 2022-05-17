@@ -23,6 +23,7 @@ public class RoleController {
 
     @GetMapping("/{userId}")
     public Set<Role> findRoleByUserId(@PathVariable Integer userId){
+
         return roleService.getRolesByUserId(userId);
     }
 }

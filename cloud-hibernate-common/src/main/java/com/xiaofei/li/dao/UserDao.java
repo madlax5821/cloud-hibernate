@@ -60,4 +60,35 @@ public class UserDao {
             HibernateUtil.close();
         }
     }
+
+    public User getUserByUsername(String username) {
+        String hql_getUserByUsername = "from User as u where u.fullName.firstName=:first_name";
+        try(Session session = HibernateUtil.getSession()){
+            Query<User> query = session.createQuery(hql_getUserByUsername);
+            query.setParameter("first_name",username);
+            return query.getSingleResult();
+        }
+    }
+
+    public static void deleteRoleByRoleId(Integer userId, Integer roleId){
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try{
+            User user = session.get(User.class, userId);
+            Role role = session.get(Role.class, roleId);
+            user.removeRole(role);
+            session.saveOrUpdate(user);
+            transaction.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+            transaction.rollback();
+        }finally {
+            HibernateUtil.close();
+        }
+    }
+
+    public static void main(String[] args) {
+        deleteRoleByRoleId(12,6);
+    }
+
 }

@@ -1,9 +1,10 @@
 package com.xiaofei.li.controller;
 
 import com.xiaofei.li.dto.UserDto;
-import com.xiaofei.li.service.UserService;
+import com.xiaofei.li.service.impl.UserServiceImpl;
 import com.xiaofei.li.vo.ResponseResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +16,12 @@ import org.springframework.web.bind.annotation.RestController;
  * Description:
  */
 @RestController
-@RequestMapping ("/users")
+@RequestMapping ("/main")
 public class UserController {
     @Autowired
-    private UserService userService;
+    private UserServiceImpl userService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseResult getUserWithAccountByUserId(@PathVariable Integer userId){
         UserDto userDto = userService.findUserByUserId(userId);
         return ResponseResult.success(userDto);
@@ -37,7 +38,7 @@ public class UserController {
         return ResponseResult.success(userDto);
     }
 
-    @GetMapping
+    @GetMapping("/users")
     public ResponseResult getAllUsers(){
         return ResponseResult.success(userService.getAllUsers());
     }

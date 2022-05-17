@@ -1,7 +1,6 @@
 package com.xiaofei.li.service;
 
 import com.xiaofei.li.entity.Role;
-import io.swagger.models.auth.In;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;

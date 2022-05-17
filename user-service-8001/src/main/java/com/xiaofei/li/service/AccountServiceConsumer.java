@@ -1,6 +1,7 @@
 package com.xiaofei.li.service;
 
 import com.xiaofei.li.entity.Account;
+import org.springframework.cloud.loadbalancer.annotation.LoadBalancerClient;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,6 +16,7 @@ import java.util.Set;
  */
 @Service
 @FeignClient ("account-service")
+@LoadBalancerClient("account-service")
 public interface AccountServiceConsumer {
     @GetMapping("/accounts/{userId}")
     Set<Account> getAccountsByUserId(@PathVariable Integer userId);

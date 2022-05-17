@@ -23,6 +23,8 @@ public class User implements Serializable {
     @Embedded
     private FullName fullName;
     @Column
+    private String password;
+    @Column
     private Integer age;
 
     @OneToMany (fetch = FetchType.LAZY,cascade = CascadeType.ALL,mappedBy = "user")
@@ -74,6 +76,14 @@ public class User implements Serializable {
     public void removeRole(Role role){
         role.getUsers().remove(this);
         this.getRoles().remove(role);
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Integer getId() {
