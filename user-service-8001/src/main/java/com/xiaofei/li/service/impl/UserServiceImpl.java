@@ -75,14 +75,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getRolesByUserId(Integer userId){
-        User user = userDao.getUserById(userId);
-        return new UserDto(
-                user.getId(),
-                user.getFullName().getFirstName(),
-                user.getFullName().getLastName(),
-                user.getAge(),
-                roleServiceConsumer.getRolesByUserId(userId)
-        );
+        try {
+            User user = userDao.getUserById(userId);
+            return new UserDto(
+                    user.getId(),
+                    user.getFullName().getFirstName(),
+                    user.getFullName().getLastName(),
+                    user.getAge(),
+                    roleServiceConsumer.getRolesByUserId(userId)
+            );
+        }catch (Exception e){
+            throw new UsernameNotFoundException("USER NOT EXISTS!!!");
+        }
     }
 
     @Override

@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 /**
  * Author: xiaofei
  * Date: 2022-04-23, 12:03
@@ -22,9 +24,13 @@ public class UserController {
     private UserServiceImpl userService;
 
     @GetMapping("/users/{userId}")
-    public ResponseResult getUserWithAccountByUserId(@PathVariable Integer userId){
-        UserDto userDto = userService.findUserByUserId(userId);
-        return ResponseResult.success(userDto);
+    public ResponseResult getUserByUserId(@PathVariable Integer userId){
+        try {
+            UserDto userDto = userService.findUserByUserId(userId);
+            return ResponseResult.success(userDto);
+        }catch (Exception e){
+            return ResponseResult.fail(e.getMessage());
+        }
     }
     @GetMapping("/accounts/{userId}")
     public ResponseResult retrieveAccountsInfoByUserId(@PathVariable Integer userId){
@@ -34,8 +40,12 @@ public class UserController {
 
     @GetMapping("/roles/{userId}")
     public ResponseResult retrieveRolesByUserId(@PathVariable Integer userId){
-        UserDto userDto = userService.getRolesByUserId(userId);
-        return ResponseResult.success(userDto);
+        try {
+            UserDto userDto = userService.getRolesByUserId(userId);
+            return ResponseResult.success(userDto);
+        }catch (Exception e){
+            return ResponseResult.fail(e.getMessage());
+        }
     }
 
     @GetMapping("/users")

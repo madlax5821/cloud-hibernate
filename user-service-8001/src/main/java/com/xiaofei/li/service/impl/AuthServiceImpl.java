@@ -43,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
             AntPathRequestMatcher antPathRequestMatcher = new AntPathRequestMatcher(url);
             if (antPathRequestMatcher.matches(request)){
                 configAttributeCollection = permissionMap.get(url);
+                break;
             }
         }
         
