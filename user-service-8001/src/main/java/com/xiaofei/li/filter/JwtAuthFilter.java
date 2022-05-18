@@ -1,7 +1,9 @@
 package com.xiaofei.li.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xiaofei.li.service.jwtService.JwtTokenService;
 import com.xiaofei.li.service.jwtService.JwtUser;
+import com.xiaofei.li.vo.ResponseResult;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,7 +22,46 @@ import java.io.IOException;
  * Description:
  */
 public class JwtAuthFilter extends BasicAuthenticationFilter {
+
+
     public JwtAuthFilter(AuthenticationManager authenticationManager) {
+        super(authenticationManager);
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
+        String token = request.getHeader(JwtTokenService.TOKEN_HEADER);
+        if (token ==null||!token.startsWith(JwtTokenService.TOKEN_PREFIX)){
+            chain.doFilter(request,response);
+            return;
+        }
+
+        try {
+            SecurityContextHolder.getContext().setAuthentication(createAuthentication(token));
+        } catch (Exception e) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            ObjectMapper mapper = new ObjectMapper();
+            response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail(e.getMessage())));
+            return;
+        }
+        super.doFilterInternal(request,response,chain);
+    }
+
+    private Authentication createAuthentication(String token) throws Exception {
+        token = token.replaceAll(JwtTokenService.TOKEN_PREFIX,"");
+        try {
+            JwtUser jwtUser = JwtTokenService.parseTokenToJwtUser(token);
+            return new UsernamePasswordAuthenticationToken(jwtUser.getUsername(),null,jwtUser.getAuthorities());
+        }catch (Exception e){
+            throw new Exception("token expired");
+        }
+    }
+}
+
+
+/*
+* public JwtAuthFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
 
@@ -32,13 +73,25 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
             return;
         }
 
-        SecurityContextHolder.getContext().setAuthentication(createAuthentication(token));
+        try {
+            SecurityContextHolder.getContext().setAuthentication(createAuthentication(token));
+        } catch (Exception e) {
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            ObjectMapper mapper = new ObjectMapper();
+            response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail(e.getMessage())));
+            return;
+        }
         super.doFilterInternal(request,response,chain);
     }
 
-    private Authentication createAuthentication(String token) {
+    private Authentication createAuthentication(String token) throws Exception {
         token = token.replaceAll(JwtTokenService.TOKEN_PREFIX,"");
-        JwtUser jwtUser = JwtTokenService.parseTokenToJwtUser(token);
-        return new UsernamePasswordAuthenticationToken(jwtUser.getUsername(),jwtUser.getPassword(),jwtUser.getAuthorities());
+        try {
+            JwtUser jwtUser = JwtTokenService.parseTokenToJwtUser(token);
+            return new UsernamePasswordAuthenticationToken(jwtUser.getUsername(), jwtUser.getPassword(), jwtUser.getAuthorities());
+        }catch (Exception e){
+            throw new Exception("token expired");
+        }
     }
-}
+* */

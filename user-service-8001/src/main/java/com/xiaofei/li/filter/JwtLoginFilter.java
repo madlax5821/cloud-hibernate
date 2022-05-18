@@ -23,54 +23,62 @@ import java.io.IOException;
  * Description:
  */
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
-
+    
     public JwtLoginFilter(AuthenticationManager authenticationManager){
         this.setAuthenticationManager(authenticationManager);
     }
-
+    
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        System.out.println("JwtLoginFilter.attemptAuthentication");
         String username = this.obtainUsername(request);
         String password = this.obtainPassword(request);
+        
         username=username!=null?username:"";
         password=password!=null?password:"";
+        
+/*        customize the rule for the access
+
+            if (username.equals("xiaofei")){
+            ObjectMapper mapper = new ObjectMapper();
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json");
+            try {
+                response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail("too ugly to be allowed to access")));
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }*/
 
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
-
         return this.getAuthenticationManager().authenticate(token);
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+        //generate jwt token
         JwtUser jwtUser = (JwtUser) authResult.getPrincipal();
         //Boolean ifRemember = Boolean.valueOf(request.getParameter("remember-me"));
-        System.out.println("remember-me value: "+request.getParameter("remember-me"));
         String token = JwtTokenService.createToken(jwtUser, false);
-        //Respond Bearer+token
-        ResponseResult rs = ResponseResult.success(JwtTokenService.TOKEN_PREFIX+token);
-
-        //set up response parameters
-        response.setContentType("application/json");
-        response.setCharacterEncoding("utf-8");
+        //set token into response writer
         ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().write(mapper.writeValueAsString(rs));
+        response.setCharacterEncoding("utf-8");
+        response.setContentType("application/json");
+        response.getWriter().write(mapper.writeValueAsString(ResponseResult.success(JwtTokenService.TOKEN_PREFIX+token)));
     }
 
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         String errorMsg = "";
         if (failed instanceof BadCredentialsException){
-            errorMsg = "username password not match";
+            errorMsg = "incorrect password";
         }else {
             errorMsg = failed.getMessage();
         }
-
-        ResponseResult rs = ResponseResult.fail(errorMsg);
-
+        
+        ObjectMapper mapper = new ObjectMapper();
         response.setCharacterEncoding("utf-8");
         response.setContentType("application/json");
-        ObjectMapper mapper = new ObjectMapper();
-        response.getWriter().write(mapper.writeValueAsString(rs))   ;
+        response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail(errorMsg)));
     }
 }

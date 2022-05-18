@@ -1,5 +1,6 @@
 package com.xiaofei.li.service.impl;
 
+import com.xiaofei.li.dao.PermissionDao;
 import com.xiaofei.li.entity.Permission;
 import com.xiaofei.li.entity.Role;
 import com.xiaofei.li.service.AuthService;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Autowired
     private PermissionServiceConsumer permissionServiceConsumer;
-
+    
     @Override
     public boolean canAccess(HttpServletRequest request, Authentication authentication) {
         Object principal = authentication.getPrincipal();
@@ -34,50 +36,48 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Map<String, Collection<ConfigAttribute>> permissionMap = getPermissionMap();
-
+        
         Collection<ConfigAttribute> configAttributeCollection = null;
-
+        
         for (String url:permissionMap.keySet()){
             AntPathRequestMatcher antPathRequestMatcher = new AntPathRequestMatcher(url);
             if (antPathRequestMatcher.matches(request)){
-                System.out.println("url: "+url+"|| request: "+request.getRequestURI());
-                configAttributeCollection=permissionMap.get(url);
-                break;
+                configAttributeCollection = permissionMap.get(url);
             }
         }
-
+        
         if (configAttributeCollection==null){
             return true;
         }
-
+        
         for (ConfigAttribute configAttribute:configAttributeCollection){
-            String roleName =configAttribute.getAttribute();
+            String requiredRole = configAttribute.getAttribute();
             for (GrantedAuthority authority: authentication.getAuthorities()){
-                System.out.println("role name: "+authority.getAuthority());
-                if (roleName.equals(authority.getAuthority())){
+                String hasRole = authority.getAuthority();
+                if (requiredRole.equals(hasRole)){
                     return true;
                 }
             }
         }
         return false;
     }
-
+    
     @PostConstruct
     private Map<String, Collection<ConfigAttribute>> getPermissionMap() {
         Map<String, Collection<ConfigAttribute>> permissionMap = new HashMap<>();
 
         List<Permission> permissions = permissionServiceConsumer.getAllPermissions();
-
+        
         Collection<ConfigAttribute> configAttributeCollection = null;
-
+        
         for (Permission permission:permissions){
             configAttributeCollection=new ArrayList<>();
-            String permissionUrl = permission.getPermissionUrl();
+            String url = permission.getPermissionUrl();
             Set<Role> roles = permissionServiceConsumer.getRolesByPermissionId(permission.getId());
             for (Role role:roles){
                 configAttributeCollection.add((ConfigAttribute) role::getRoleName);
             }
-            permissionMap.put(permissionUrl,configAttributeCollection);
+            permissionMap.put(url,configAttributeCollection);
         }
         return permissionMap;
     }

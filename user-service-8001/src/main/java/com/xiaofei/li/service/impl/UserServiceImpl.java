@@ -98,6 +98,7 @@ public class UserServiceImpl implements UserService {
 
             Set<Role> roles = roleServiceConsumer.getRolesByUserId(id);
             List<GrantedAuthority> authorities = new ArrayList<>();
+
             for (Role role:roles){
                 authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
             }
