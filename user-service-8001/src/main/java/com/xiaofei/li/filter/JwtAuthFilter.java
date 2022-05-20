@@ -23,7 +23,6 @@ import java.io.IOException;
  */
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
-
     public JwtAuthFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
@@ -31,13 +30,12 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = request.getHeader(JwtTokenService.TOKEN_HEADER);
-        if (token ==null||!token.startsWith(JwtTokenService.TOKEN_PREFIX)){
+        if (token==null ||!token.startsWith(JwtTokenService.TOKEN_PREFIX)){
             chain.doFilter(request,response);
             return;
         }
-
         try {
-            SecurityContextHolder.getContext().setAuthentication(createAuthentication(token));
+            SecurityContextHolder.getContext().setAuthentication(generateAuthentication(token));
         } catch (Exception e) {
             response.setContentType("application/json");
             response.setCharacterEncoding("utf-8");
@@ -48,50 +46,13 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
         super.doFilterInternal(request,response,chain);
     }
 
-    private Authentication createAuthentication(String token) throws Exception {
+    private Authentication generateAuthentication(String token) throws Exception {
         token = token.replaceAll(JwtTokenService.TOKEN_PREFIX,"");
         try {
             JwtUser jwtUser = JwtTokenService.parseTokenToJwtUser(token);
-            return new UsernamePasswordAuthenticationToken(jwtUser.getUsername(),null,jwtUser.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(jwtUser,null,jwtUser.getAuthorities());
         }catch (Exception e){
             throw new Exception("token expired");
         }
     }
 }
-
-
-/*
-* public JwtAuthFilter(AuthenticationManager authenticationManager) {
-        super(authenticationManager);
-    }
-
-    @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String token = request.getHeader(JwtTokenService.TOKEN_HEADER);
-        if (token==null||!token.startsWith(JwtTokenService.TOKEN_PREFIX)){
-            chain.doFilter(request,response);
-            return;
-        }
-
-        try {
-            SecurityContextHolder.getContext().setAuthentication(createAuthentication(token));
-        } catch (Exception e) {
-            response.setContentType("application/json");
-            response.setCharacterEncoding("utf-8");
-            ObjectMapper mapper = new ObjectMapper();
-            response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail(e.getMessage())));
-            return;
-        }
-        super.doFilterInternal(request,response,chain);
-    }
-
-    private Authentication createAuthentication(String token) throws Exception {
-        token = token.replaceAll(JwtTokenService.TOKEN_PREFIX,"");
-        try {
-            JwtUser jwtUser = JwtTokenService.parseTokenToJwtUser(token);
-            return new UsernamePasswordAuthenticationToken(jwtUser.getUsername(), jwtUser.getPassword(), jwtUser.getAuthorities());
-        }catch (Exception e){
-            throw new Exception("token expired");
-        }
-    }
-* */

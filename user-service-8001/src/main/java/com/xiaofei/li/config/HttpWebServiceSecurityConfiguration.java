@@ -1,5 +1,6 @@
 package com.xiaofei.li.config;
 
+import com.xiaofei.li.filter.CustomFilter;
 import com.xiaofei.li.filter.JwtAuthFilter;
 import com.xiaofei.li.filter.JwtLoginFilter;
 import com.xiaofei.li.service.AuthService;
@@ -57,6 +58,7 @@ public class HttpWebServiceSecurityConfiguration extends WebSecurityConfigurerAd
                 and().
                 addFilterAt(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class).
                 addFilterAt(new JwtAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class).
+                addFilterAfter(customFilter(),UsernamePasswordAuthenticationFilter.class).
                 sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).maximumSessions(1);
     }
 
@@ -64,4 +66,7 @@ public class HttpWebServiceSecurityConfiguration extends WebSecurityConfigurerAd
     public PasswordEncoder passwordEncoder(){
         return new Pbkdf2PasswordEncoder();
     }
+    
+    @Bean
+    public CustomFilter customFilter(){return new CustomFilter();}
 }

@@ -14,28 +14,19 @@ import java.util.List;
  * Description:
  */
 public class JwtUser implements UserDetails {
-
     private Integer id;
     private String username;
     private String password;
-    private List<? extends GrantedAuthority> authorities;
+    private List<GrantedAuthority> authorities;
 
     public JwtUser() {
     }
 
-    public JwtUser(User user, String password, List<? extends GrantedAuthority> authorities) {
+    public JwtUser(User user, String password,List<GrantedAuthority> authorities) {
         this.id = user.getId();
         this.username = user.getFullName().getFirstName();
         this.password = password;
         this.authorities = authorities;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     @Override
@@ -44,6 +35,10 @@ public class JwtUser implements UserDetails {
             authorities=new ArrayList<>();
         }
         return authorities;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override

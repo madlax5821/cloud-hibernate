@@ -101,16 +101,17 @@ public class UserServiceImpl implements UserService {
             String password = user.getPassword();
 
             Set<Role> roles = roleServiceConsumer.getRolesByUserId(id);
+
             List<GrantedAuthority> authorities = new ArrayList<>();
 
             for (Role role:roles){
                 authorities.add(new SimpleGrantedAuthority(role.getRoleName()));
             }
-            //return new org.springframework.security.core.userdetails.User(username,password,authorities);
+
             return new JwtUser(user,password,authorities);
         }catch (Exception e){
             e.printStackTrace();
         }
         return null;
-    }
+    }    
 }
