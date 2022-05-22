@@ -22,11 +22,17 @@ public class JwtUser implements UserDetails {
     public JwtUser() {
     }
 
-    public JwtUser(User user, String password,List<GrantedAuthority> authorities) {
-        this.id = user.getId();
-        this.username = user.getFullName().getFirstName();
-        this.password = password;
-        this.authorities = authorities;
+    public JwtUser(User user, String password, List<GrantedAuthority> authorities) {
+        this.id=user.getId();
+        this.username=user.getEmail();
+        this.password=password;
+        this.authorities=authorities;
+    }
+    
+    
+
+    public Integer getId() {
+        return id;
     }
 
     @Override
@@ -35,10 +41,6 @@ public class JwtUser implements UserDetails {
             authorities=new ArrayList<>();
         }
         return authorities;
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     @Override

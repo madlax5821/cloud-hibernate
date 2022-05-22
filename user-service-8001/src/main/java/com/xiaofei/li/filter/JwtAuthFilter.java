@@ -23,6 +23,7 @@ import java.io.IOException;
  */
 public class JwtAuthFilter extends BasicAuthenticationFilter {
 
+
     public JwtAuthFilter(AuthenticationManager authenticationManager) {
         super(authenticationManager);
     }
@@ -30,10 +31,11 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
         String token = request.getHeader(JwtTokenService.TOKEN_HEADER);
-        if (token==null ||!token.startsWith(JwtTokenService.TOKEN_PREFIX)){
+        if (token==null||!token.startsWith(JwtTokenService.TOKEN_PREFIX)){
             chain.doFilter(request,response);
             return;
         }
+
         try {
             SecurityContextHolder.getContext().setAuthentication(generateAuthentication(token));
         } catch (Exception e) {

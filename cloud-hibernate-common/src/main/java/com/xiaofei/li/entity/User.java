@@ -20,6 +20,8 @@ public class User implements Serializable {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column
     private Integer id;
+    @Column (updatable = false)
+    private String email;
     @Embedded
     private FullName fullName;
     @Column
@@ -47,6 +49,14 @@ public class User implements Serializable {
         this.id = id;
         this.fullName = fullName;
         this.age = age;
+    }
+    
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void addIDCard(IDCard idCard){
@@ -157,6 +167,7 @@ public class User implements Serializable {
     public String toString() {
         return "User{" +
                 "id=" + id +
+                ", email='" + email + '\'' +
                 ", fullName=" + fullName +
                 ", age=" + age +
                 '}';

@@ -19,8 +19,8 @@ public class Account implements Serializable {
     private Integer id;
     @Column (name = "account_name")
     private String accountName;
-    @Column (name = "account_desc")
-    private String accountDesc;
+    @Column (name = "account_number")
+    private String accountNum;
     @ManyToOne
     @JoinColumn (name = "user_id")
     @JsonIgnore
@@ -28,10 +28,10 @@ public class Account implements Serializable {
 
     public Account() {
     }
-    public Account(Integer id, String accountName, String accountDesc) {
+    public Account(Integer id, String accountName, String accountNum) {
         this.id = id;
         this.accountName = accountName;
-        this.accountDesc = accountDesc;
+        this.accountNum = accountNum;
     }
 
     public Integer getId() {
@@ -50,12 +50,12 @@ public class Account implements Serializable {
         this.accountName = accountName;
     }
 
-    public String getAccountDesc() {
-        return accountDesc;
+    public String getAccountNum() {
+        return accountNum;
     }
 
-    public void setAccountDesc(String accountDesc) {
-        this.accountDesc = accountDesc;
+    public void setAccountNum(String accountNum) {
+        this.accountNum = accountNum;
     }
 
     public User getUser() {
@@ -71,7 +71,7 @@ public class Account implements Serializable {
         return "Account{" +
                 "id=" + id +
                 ", accountName='" + accountName + '\'' +
-                ", accountDesc='" + accountDesc + '\'' +
+                ", accountNum='" + accountNum + '\'' +
                 '}';
     }
 }

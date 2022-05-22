@@ -16,7 +16,7 @@ spring:
           servceId: user-service
           uri: http://localhost:8001/
           predicates:
-            - Path=/main/**, /login, /index, /
+            - Path=/main/**, /login, /index, /, /register
 management:
   endpoints:
     web:

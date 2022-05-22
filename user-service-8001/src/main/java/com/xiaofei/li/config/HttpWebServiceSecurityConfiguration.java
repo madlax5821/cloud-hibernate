@@ -33,10 +33,14 @@ public class HttpWebServiceSecurityConfiguration extends WebSecurityConfigurerAd
     private UserServiceImpl userService;
     @Autowired
     private AuthService authService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+    @Autowired
+    private CustomFilter customFilter;
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
     }
 
     @Override
@@ -52,21 +56,13 @@ public class HttpWebServiceSecurityConfiguration extends WebSecurityConfigurerAd
                 csrf().disable().
                 authorizeRequests().
                 antMatchers("/js/**","/images/**","/css/**").permitAll().//static resources
-                antMatchers("/login").permitAll().
+                antMatchers("/login","/register").permitAll().
                 //anyRequest().authenticated();
                 anyRequest().access("@authServiceImpl.canAccess(request,authentication)").
                 and().
                 addFilterAt(new JwtLoginFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class).
                 addFilterAt(new JwtAuthFilter(authenticationManager()), UsernamePasswordAuthenticationFilter.class).
-                addFilterAfter(customFilter(),UsernamePasswordAuthenticationFilter.class).
+                addFilterAfter(customFilter,UsernamePasswordAuthenticationFilter.class).
                 sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS).maximumSessions(1);
     }
-
-    @Bean
-    public PasswordEncoder passwordEncoder(){
-        return new Pbkdf2PasswordEncoder();
-    }
-    
-    @Bean
-    public CustomFilter customFilter(){return new CustomFilter();}
 }

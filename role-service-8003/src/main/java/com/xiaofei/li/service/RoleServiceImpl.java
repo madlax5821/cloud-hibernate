@@ -18,6 +18,6 @@ public class RoleServiceImpl {
     private RoleDao roleDao;
 
     public Set<Role> getRolesByUserId(Integer userId){
-        return roleDao.getRoleByUserId(userId);
+        return roleDao.getRolesByUserId(userId);
     }
 }

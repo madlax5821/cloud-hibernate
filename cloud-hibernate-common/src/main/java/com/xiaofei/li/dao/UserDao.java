@@ -5,6 +5,7 @@ import com.xiaofei.li.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,12 +18,16 @@ import java.util.Set;
  */
 @Repository
 public class UserDao {
+    @Autowired
+    private RoleDao roleDao;
 
     public void saveUser(User user){
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try{
-            session.saveOrUpdate(user);
+            Role role = roleDao.getRoleByRoleName("ROLE_USER");
+            user.addRole(role);
+            session.save(user);
             transaction.commit();
         }catch (Exception e){
             e.printStackTrace();
@@ -69,8 +74,25 @@ public class UserDao {
             return query.getSingleResult();
         }
     }
+    
+    public void addRoleByRoleName(Integer userId, String roleName){
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try{
+            User user = session.get(User.class, userId);
+            Role role = roleDao.getRoleByRoleName(roleName);
+            user.addRole(role);
+            saveUser(user);
+            transaction.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+            transaction.rollback();
+        }finally {
+            HibernateUtil.close();
+        }
+    }
 
-    public static void deleteRoleByRoleId(Integer userId, Integer roleId){
+    public void deleteRoleByRoleId(Integer userId, Integer roleId){
         Session session = HibernateUtil.getSession();
         Transaction transaction = session.beginTransaction();
         try{
@@ -86,9 +108,35 @@ public class UserDao {
             HibernateUtil.close();
         }
     }
-
-    public static void main(String[] args) {
-        deleteRoleByRoleId(12,6);
+    
+    public User getUserByEmail(String email){
+        String hql_getUserByEmail="from User u where u.email=:email";
+        try (Session session = HibernateUtil.getSession()){
+            Query<User> query = session.createQuery(hql_getUserByEmail);
+            query.setParameter("email",email);
+            return query.uniqueResult();
+        }
     }
 
+    public void updateUser(User user) {
+        String hql_updateByDynamicAttributes="update User u set u.fullName.firstName=:first_name, u.fullName.lastName=:last_name" +
+                ", u.age=:age where u.id=:id";
+        try (Session session = HibernateUtil.getSession()){
+            session.beginTransaction();
+            Query<User> query = session.createQuery(hql_updateByDynamicAttributes);
+            String firstName = null;
+            String lastName = null;
+            if (user.getFullName()!=null){
+                firstName=user.getFullName().getFirstName();
+                lastName=user.getFullName().getLastName();
+            }
+            query.setParameter("first_name",firstName);
+            query.setParameter("last_name",lastName);
+            query.setParameter("age",user.getAge());
+            query.setParameter("id",user.getId());
+            
+            query.executeUpdate();
+            session.getTransaction().commit();
+        }
+    }
 }

@@ -1,5 +1,6 @@
 package com.xiaofei.li.service.impl;
 
+import com.xiaofei.li.dao.PermissionDao;
 import com.xiaofei.li.entity.Permission;
 import com.xiaofei.li.entity.Role;
 import com.xiaofei.li.service.AuthService;
@@ -24,7 +25,7 @@ import java.util.*;
 public class AuthServiceImpl implements AuthService {
     
     @Autowired
-    private PermissionServiceConsumer permissionServiceConsumer;
+    private PermissionDao permissionDao;
 
     @Override
     public boolean canAccess(HttpServletRequest request, Authentication authentication) {
@@ -38,8 +39,8 @@ public class AuthServiceImpl implements AuthService {
         Collection<ConfigAttribute> configAttributeCollection = null;
         
         for (String url:permissionMap.keySet()){
-            AntPathRequestMatcher antPathRequestMatcher = new AntPathRequestMatcher(url);
-            if (antPathRequestMatcher.matches(request)){
+            AntPathRequestMatcher matcher = new AntPathRequestMatcher(url);
+            if (matcher.matches(request)){
                 configAttributeCollection = permissionMap.get(url);
                 break;
             }
@@ -51,7 +52,7 @@ public class AuthServiceImpl implements AuthService {
         
         for (ConfigAttribute configAttribute:configAttributeCollection){
             String requiredRole = configAttribute.getAttribute();
-            for (GrantedAuthority authority:authentication.getAuthorities()){
+            for (GrantedAuthority authority: authentication.getAuthorities()){
                 String hasRole = authority.getAuthority();
                 if (requiredRole.equals(hasRole)){
                     return true;
@@ -65,15 +66,14 @@ public class AuthServiceImpl implements AuthService {
     private Map<String, Collection<ConfigAttribute>> getPermissionMap() {
         Map<String, Collection<ConfigAttribute>> permissionMap = new HashMap<>();
 
-        List<Permission> allPermissions = permissionServiceConsumer.getAllPermissions();
+        List<Permission> permissions = permissionDao.getAllPermissions();
         
         Collection<ConfigAttribute> configAttributeCollection;
         
-        for (Permission permission:allPermissions){
+        for(Permission permission:permissions){
             configAttributeCollection = new ArrayList<>();
-            
             String url = permission.getPermissionUrl();
-            Set<Role> rolesPerUrl = permissionServiceConsumer.getRolesByPermissionId(permission.getId());
+            Set<Role> rolesPerUrl = permissionDao.getRolesByPermissionId(permission.getId());
             for (Role role:rolesPerUrl){
                 configAttributeCollection.add((ConfigAttribute) role::getRoleName);
             }
@@ -82,5 +82,4 @@ public class AuthServiceImpl implements AuthService {
         return permissionMap;
     }
 }
-
 

@@ -1,7 +1,9 @@
 package com.xiaofei.li.dto;
 
+import com.xiaofei.li.dao.UserDao;
 import com.xiaofei.li.entity.Account;
 import com.xiaofei.li.entity.Role;
+import com.xiaofei.li.entity.User;
 import lombok.Data;
 
 import java.util.Set;
@@ -14,6 +16,7 @@ import java.util.Set;
 @Data
 public class UserDto {
     private Integer id;
+    private String email;
     private String firstName;
     private String lastName;
     private Integer age;
@@ -23,18 +26,30 @@ public class UserDto {
     public UserDto() {
     }
 
-    public UserDto(Integer id, String firstName, String lastName, Integer age) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
+    public UserDto(User user) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        if (user.getFullName()==null){
+            this.firstName=null;
+            this.lastName=null;
+        }else {
+            this.firstName = user.getFullName().getFirstName();
+            this.lastName = user.getFullName().getLastName();
+        }
+        this.age = user.getAge();
     }
 
-    public UserDto(Integer id, String firstName, String lastName, Integer age, Set set) {
-        this.id = id;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.age = age;
+    public UserDto(User user, Set set) {
+        this.id = user.getId();
+        this.email = user.getEmail();
+        if (user.getFullName()==null){
+            this.firstName=null;
+            this.lastName=null;
+        }else {
+            this.firstName = user.getFullName().getFirstName();
+            this.lastName = user.getFullName().getLastName();
+        }
+        this.age = user.getAge();
         this.set = set;
     }
 }

@@ -1,8 +1,11 @@
 package com.xiaofei.li.config;
 
+import com.xiaofei.li.filter.CustomFilter;
 import com.xiaofei.li.interceptor.CustomInterceptor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.servlet.HandlerInterceptor;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.crypto.password.Pbkdf2PasswordEncoder;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
@@ -21,6 +24,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
         registry.addViewController("/").setViewName("index");
         registry.addViewController("/index").setViewName("index");
+        //registry.addViewController("/register").setViewName("register");
 
     }
 
@@ -35,4 +39,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new CustomInterceptor()).addPathPatterns("/**");
     }
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new Pbkdf2PasswordEncoder();
+    }
+
+    @Bean
+    public CustomFilter customFilter(){return new CustomFilter();}
 }

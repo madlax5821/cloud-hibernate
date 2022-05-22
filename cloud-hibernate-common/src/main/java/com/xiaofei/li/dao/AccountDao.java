@@ -25,4 +25,49 @@ public class AccountDao {
             return query.uniqueResult().getAccounts();
         }
     }
+    
+    public void saveAccount(Account account, Integer userId){
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try{
+            User user = session.get(User.class, userId);
+            user.addAccount(account);
+            session.save(user);
+            transaction.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+            transaction.rollback();
+        }finally {
+            HibernateUtil.close();
+        }
+    }
+    
+    public void deleteAccountWithInUser(Account account, Integer userId){
+        Session session = HibernateUtil.getSession();
+        Transaction transaction = session.beginTransaction();
+        try{
+            User user = session.get(User.class, userId);
+            user.removeAccount(account);
+            
+            session.saveOrUpdate(user);
+            deleteAccountByAccountNumber(account.getAccountNum());
+            transaction.commit();
+        }catch (Exception e){
+            e.printStackTrace();
+            transaction.rollback();
+        }finally {
+            HibernateUtil.close();
+        }
+    }
+    
+    public void deleteAccountByAccountNumber(String accountNum){
+        String hql_deleteAccountByAccountNum="delete from Account a where a.accountNum=:account_number";
+        try (Session session = HibernateUtil.getSession()){
+            Transaction transaction = session.beginTransaction();
+            Query<Account> query = session.createQuery(hql_deleteAccountByAccountNum);
+            query.setParameter("account_number",accountNum);
+            query.executeUpdate();
+            session.getTransaction().commit();
+        }
+    }
 }
