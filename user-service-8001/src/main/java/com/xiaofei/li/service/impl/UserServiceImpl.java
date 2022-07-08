@@ -12,13 +12,11 @@ import com.xiaofei.li.service.RoleServiceConsumer;
 import com.xiaofei.li.service.UserService;
 import com.xiaofei.li.service.jwtService.JwtTokenService;
 import com.xiaofei.li.service.jwtService.JwtUser;
-import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -92,11 +90,11 @@ public class UserServiceImpl implements UserService {
             if (user==null){
                 throw new UsernameNotFoundException("user not exists");
             }
-
-            Integer id = user.getId();
+            Integer userId = user.getId();
             String password = user.getPassword();
 
-            Set<Role> roles = roleServiceConsumer.getRolesByUserId(id);
+            Set<Role> roles = roleServiceConsumer.getRolesByUserId(userId);
+
             List<GrantedAuthority> authorities = new ArrayList<>();
 
             for (Role role:roles){
@@ -108,7 +106,7 @@ public class UserServiceImpl implements UserService {
         }
         return null;
     }
-
+    
     public String register(User user) throws Exception {
         User userInDataSource = userDao.getUserByEmail(user.getEmail());
         // determine if the email address already registered
@@ -163,7 +161,7 @@ public class UserServiceImpl implements UserService {
         try {
             accountServiceConsumer.deleteAccount(accountDto);
         }catch (Exception e){
-            throw new Exception(e.getMessage());
+            throw new Exception("account doesn't exist");
         }
     }
 }

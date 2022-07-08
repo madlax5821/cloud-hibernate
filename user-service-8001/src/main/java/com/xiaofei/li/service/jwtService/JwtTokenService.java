@@ -1,6 +1,5 @@
 package com.xiaofei.li.service.jwtService;
 
-import com.xiaofei.li.entity.FullName;
 import com.xiaofei.li.entity.User;
 import io.jsonwebtoken.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,26 +14,26 @@ import java.util.*;
  */
 @Service
 public class JwtTokenService {
-    public static final String TOKEN_HEADER = "Authorization";
     public static final String TOKEN_PREFIX = "Bearer ";
+    public static final String TOKEN_HEADER = "Authorization";
     
-    private static final String SECRET = "xiaofeifei";
-    private static final String ISSUER = "rockville";
+    private static final String SECRET = "XIAOFEI";
+    private static final String ISSUER = "ROCKVILLE";
     
     private static final Long EXPIRATION = 300L*1000;
     private static final Long EXPIRATION_REMEMBER_ME = 3600L*1000;
     
-    public static String generateToken(JwtUser user, boolean ifRememberMe){
-        long expiration = ifRememberMe?EXPIRATION_REMEMBER_ME:EXPIRATION;
-        Map<String, Object> map = new HashMap<>();
-        map.put("id",user.getId());
-        map.put("username",user.getUsername());
-        map.put("authorities",user.getAuthorities());
+    public static String generateToken(JwtUser user, boolean ifRemember){
+        long expiration = ifRemember?EXPIRATION_REMEMBER_ME:EXPIRATION;
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("id",user.getId());
+        claims.put("username",user.getUsername());
+        claims.put("authorities",user.getAuthorities());
         
         return Jwts.builder()
                 .signWith(SignatureAlgorithm.HS512,SECRET)
+                .setClaims(claims)
                 .setIssuer(ISSUER)
-                .setClaims(map)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis()+expiration))
                 .compact();
@@ -56,10 +55,11 @@ public class JwtTokenService {
         List<LinkedHashMap<String, String>> roleMap = (List<LinkedHashMap<String, String>>) claims.get("authorities");
         
         List<GrantedAuthority> authorities = new ArrayList<>();
-        
         for (LinkedHashMap<String, String> role:roleMap){
             authorities.add(new SimpleGrantedAuthority(role.get("authority")));
         }
         return new JwtUser(user,null,authorities);
     }
 }
+
+

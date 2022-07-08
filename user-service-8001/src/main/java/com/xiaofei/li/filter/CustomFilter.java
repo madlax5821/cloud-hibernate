@@ -11,7 +11,7 @@ import java.io.IOException;
  * Date: 2022-05-18, 17:22
  * Description:
  */
-// alternative method to make sure there is always 1 filter running is to extend OncePerRequestFilter, same bottom logic
+// alternative pattern to make sure there is always 1 filter running is to extend OncePerRequestFilter, same bottom logic
 public class CustomFilter extends GenericFilter {
     
     private static final String FILTER_APPLIED =  "custom filter already be invoked";

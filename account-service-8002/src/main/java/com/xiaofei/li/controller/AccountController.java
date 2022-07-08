@@ -33,8 +33,9 @@ public class AccountController {
     }
     
     @DeleteMapping("/account")
-    public void deleteAccount(@RequestBody AccountDto accountDto){
+    public void deleteAccount(@RequestBody AccountDto accountDto) throws Exception {
         accountService.deleteAccount(accountDto.getAccount(),accountDto.getUserId());
+        
     }
 
 }

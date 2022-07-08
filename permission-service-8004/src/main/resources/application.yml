@@ -1,11 +1,40 @@
-server:
-  port: 8004
 spring:
   application:
     name: permission-service
+  profiles:
+    active: port-7004
 
 eureka:
   client:
     service-url:
       #defaultZone: http://localhost:6001/eureka
       defaultZone: http://localhost:7001/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        
+---
+server:
+  port: 8004
+spring:
+  config:
+    activate:
+      on-profile: port-8004
+      
+---
+server:
+  port: 7004
+spring:
+  config:
+    activate:
+      on-profile: port-7004
+      
+---
+server:
+  port: 9004
+spring:
+  config:
+    activate:
+      on-profile: port-9004

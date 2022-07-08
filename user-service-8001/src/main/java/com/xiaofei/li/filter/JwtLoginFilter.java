@@ -23,8 +23,8 @@ import java.io.IOException;
  * Description:
  */
 public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
-    
-    public JwtLoginFilter(AuthenticationManager authenticationManager){
+
+    public JwtLoginFilter(AuthenticationManager authenticationManager) {
         this.setAuthenticationManager(authenticationManager);
     }
 
@@ -33,20 +33,21 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = this.obtainUsername(request);
         String password = this.obtainPassword(request);
         
-        username = username!=null?username:"";
-        password = password!=null?password:"";
+        username=username!=null?username:"";
+        password=password!=null?password:"";
         
-//        if (username.startsWith("kevin")){
-//            response.setCharacterEncoding("utf-8");
-//            response.setContentType("application/json");
-//            ObjectMapper mapper = new ObjectMapper();
-//            try {
-//                response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail("too ugly to access")));
-//                return null;
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//        }
+        if (username.equals("kevin@nba.com")){
+            response.setCharacterEncoding("utf-8");
+            response.setContentType("application/json");
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail("too ugly to access")));
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password);
         token.setDetails(request.getParameter("remember-me"));
         return this.getAuthenticationManager().authenticate(token);
@@ -55,8 +56,8 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         JwtUser jwtUser = (JwtUser) authResult.getPrincipal();
-        Boolean ifRememberMe = Boolean.parseBoolean((String) authResult.getDetails());
-        String token = JwtTokenService.generateToken(jwtUser, ifRememberMe);
+        boolean ifRemember = Boolean.parseBoolean((String) authResult.getDetails());
+        String token = JwtTokenService.generateToken(jwtUser, ifRemember);
         
         response.setContentType("application/json");
         response.setCharacterEncoding("utf-8");
@@ -68,7 +69,7 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException, ServletException {
         String errorMsg = "";
         if (failed instanceof BadCredentialsException){
-            errorMsg = "username or password not match";
+            errorMsg="incorrect username or password";
         }else {
             errorMsg = failed.getMessage();
         }
@@ -79,3 +80,6 @@ public class JwtLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.getWriter().write(mapper.writeValueAsString(ResponseResult.fail(errorMsg)));
     }
 }
+
+
+

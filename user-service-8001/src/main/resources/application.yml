@@ -1,12 +1,41 @@
-server:
-  port: 8001
 spring:
   application:
     name: user-service
+  profiles:
+    active: port-8001
 
 eureka:
   client:
     service-url:
       #defaultZone: http://localhost:6001/eureka
       defaultZone: http://localhost:7001/eureka
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
+---
+spring:
+  config:
+    activate:
+      on-profile: port-8001
+server:
+  port: 8001
+  
+---
+spring:
+  config:
+    activate:
+      on-profile: port-9001
+server:
+  port: 9001
+    
+---
+spring:
+  config:
+    activate:
+      on-profile: port-10002
+server:
+  port: 10002
+    

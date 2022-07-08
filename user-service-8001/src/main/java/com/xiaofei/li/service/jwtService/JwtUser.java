@@ -1,6 +1,7 @@
 package com.xiaofei.li.service.jwtService;
 
 import com.xiaofei.li.entity.User;
+import org.springframework.security.access.ConfigAttribute;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -17,28 +18,22 @@ public class JwtUser implements UserDetails {
     private Integer id;
     private String username;
     private String password;
-    private List<GrantedAuthority> authorities;
+    private Collection<GrantedAuthority> authorities;
 
     public JwtUser() {
     }
 
-    public JwtUser(User user, String password, List<GrantedAuthority> authorities) {
+    public JwtUser(User user, String password, Collection<GrantedAuthority> authorities) {
         this.id=user.getId();
         this.username=user.getEmail();
         this.password=password;
         this.authorities=authorities;
     }
-    
-    
-
-    public Integer getId() {
-        return id;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         if (authorities==null){
-            authorities=new ArrayList<>();
+            authorities = new ArrayList<>();
         }
         return authorities;
     }
@@ -50,7 +45,11 @@ public class JwtUser implements UserDetails {
 
     @Override
     public String getUsername() {
-        return this.username;
+        return username;
+    }
+
+    public Integer getId() {
+        return id;
     }
 
     @Override
@@ -73,3 +72,7 @@ public class JwtUser implements UserDetails {
         return true;
     }
 }
+
+
+
+

@@ -19,7 +19,7 @@ public class Account implements Serializable {
     private Integer id;
     @Column (name = "account_name")
     private String accountName;
-    @Column (name = "account_number")
+    @Column (name = "account_number", updatable = false)
     private String accountNum;
     @ManyToOne
     @JoinColumn (name = "user_id")

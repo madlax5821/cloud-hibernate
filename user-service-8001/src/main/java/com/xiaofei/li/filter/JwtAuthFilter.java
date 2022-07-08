@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.xiaofei.li.service.jwtService.JwtTokenService;
 import com.xiaofei.li.service.jwtService.JwtUser;
 import com.xiaofei.li.vo.ResponseResult;
+import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -35,7 +36,6 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
             chain.doFilter(request,response);
             return;
         }
-
         try {
             SecurityContextHolder.getContext().setAuthentication(generateAuthentication(token));
         } catch (Exception e) {
@@ -49,12 +49,15 @@ public class JwtAuthFilter extends BasicAuthenticationFilter {
     }
 
     private Authentication generateAuthentication(String token) throws Exception {
-        token = token.replaceAll(JwtTokenService.TOKEN_PREFIX,"");
+        token=token.replaceAll(JwtTokenService.TOKEN_PREFIX,"");
         try {
             JwtUser jwtUser = JwtTokenService.parseTokenToJwtUser(token);
-            return new UsernamePasswordAuthenticationToken(jwtUser,null,jwtUser.getAuthorities());
+            return new UsernamePasswordAuthenticationToken(jwtUser,null, jwtUser.getAuthorities());
         }catch (Exception e){
-            throw new Exception("token expired");
+            throw new Exception("token expired...");
         }
     }
 }
+
+
+

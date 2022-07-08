@@ -29,11 +29,14 @@ public class AccountServiceImpl{
 
     }
     
-    public void deleteAccount(Account account, Integer userId){
+    public void deleteAccount(Account account, Integer userId) throws Exception {
+        if (accountDao.getAccountByAccountNum(account.getAccountNum())==null){
+            throw new Exception("account doesn't exist");
+        }
         accountDao.deleteAccountWithInUser(account,userId);
     }
 
-    public Account addAccount(Account account, Integer userId) {
+    public Account addAccount(Account account, Integer userId){
         accountDao.saveAccount(account,userId);
         System.out.println(account);
         return account;

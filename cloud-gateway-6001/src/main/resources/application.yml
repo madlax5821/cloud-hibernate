@@ -1,6 +1,3 @@
-server:
-  port: 6001
-
 eureka:
   client:
     service-url:
@@ -9,6 +6,19 @@ eureka:
 spring:
   application:
     name: cloud-gateway
+  profiles:
+    active: port-6001
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        
+---
+spring:
+  config:
+    activate:
+      on-profile: port-6001
   cloud:
     gateway:
       routes:
@@ -17,8 +27,37 @@ spring:
           uri: http://localhost:8001/
           predicates:
             - Path=/main/**, /login, /index, /, /register
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
+server:
+  port: 6001
+  
+---
+spring:
+  config:
+    activate:
+      on-profile: port-6002
+  cloud:
+    gateway:
+      routes:
+        - id: userModule
+          servceId: user-service
+          uri: http://localhost:9001/
+          predicates:
+            - Path=/main/**, /login, /index, /, /register
+server:
+  port: 6002
+  
+---
+spring:
+  config:
+    activate:
+      on-profile: port-6003
+  cloud:
+    gateway:
+      routes:
+        - id: userModule
+          servceId: user-service
+          uri: http://localhost:10001/
+          predicates:
+            - Path=/main/**, /login, /index, /, /register
+server:
+  port: 6003  

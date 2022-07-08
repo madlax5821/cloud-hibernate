@@ -70,4 +70,13 @@ public class AccountDao {
             session.getTransaction().commit();
         }
     }
+
+    public Account getAccountByAccountNum(String accountNum) {
+        String hql_getAccountByAccountNum="from Account a where a.accountNum=:account_num";
+        try (Session session = HibernateUtil.getSession()){
+            Query<Account> query = session.createQuery(hql_getAccountByAccountNum);
+            query.setParameter("account_num",accountNum);
+            return query.uniqueResult();
+        }
+    }
 }
